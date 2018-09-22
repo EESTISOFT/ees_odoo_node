@@ -17,11 +17,3 @@ Prerequisite : Install nodejs on the machine.
 
 Maintainer
 ----------
-.. image:: https://officinetesla.it/img/ou-ot.png
-   :target: http://officinetesla.it
-   :width: 390px
-   :align: center
-   :height: 200px
-   :alt: Officine Tesla
-   
-This module is maintained by Hideki Andrea Yamamoto.
