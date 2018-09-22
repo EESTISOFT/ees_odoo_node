@@ -1,5 +1,6 @@
 # ees_odoo_node
 This repository is a node-js module for odoo. It allows to run and edit node-js scripts.
+- currently works only in windows -
 
 Prerequisite : Install nodejs on the machine.
   - Install the module
