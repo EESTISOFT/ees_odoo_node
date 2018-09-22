@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo><!-- OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO -->
+<!-- OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO Frontend essets -->
+
+<record id="ees_odoo_node.script_form" model="ir.ui.view"><field name="name">ees_odoo_node.script_form</field>
+<field name="model">ees_odoo_node.script</field><field eval="18" name="priority"/><field name="arch" type="xml"><form>
+	<sheet><div class="oe_button_box" name="button_box"><button name="toggle_active" type="object" class="oe_stat_button" icon="fa-archive">
+		<field name="active" widget="boolean_button" options="{&quot;terminology&quot;: &quot;archive&quot;}"/></button>
+	</div><div class="oe_title"><label class="oe_edit_only" for="name" string="Nome"/><h1><field name="name"/></h1></div>
+	<hr/>	<label for="desc" string="Descrizione"/><field name="desc"/><field name="pid" invisible="1"/>
+	<notebook>
+		<page string="Node-Js console"><button name="run_script_once" string="esegui" type="object" class="btn-primary" attrs="{'invisible':[('pid','>',0)]}"/><button
+			name="stop_script_once" string="stop" type="object" class="btn-primary" attrs="{'invisible':[('pid','=',0)]}" /><button
+			name="fake_refresh" string="aggiorna console" type="object" class="btn-primary" /><button
+			name="clean_console" string="pulisci console" type="object" class="btn-primary" />
+			<field name="console_js" readonly="1"/>		
+		</page>
+		<page string="Node-Js code"><field name="jscontents" widget="ace" ace-mode="javascript"/></page>
+	</notebook>
+</sheet></form></field></record>
+<record id="ees_odoo_node.script_tree" model="ir.ui.view"><field name="name">ees_odoo_node.script_tree</field>
+<field name="model">ees_odoo_node.script</field><field eval="18" name="priority"/><field name="arch" type="xml"><tree string="Views">
+    <field name="name"/><field name="desc"/>
+</tree></field></record>
+<record id="ees_odoo_node.script_search" model="ir.ui.view"><field name="name">ees_odoo_node.script_search</field>
+<field name="model">ees_odoo_node.script</field><field eval="18" name="priority"/><field name="arch" type="xml"><search string="Views">
+    <field name="name" filter_domain="['|', '|', ('name','ilike',self), ('model','ilike',self), ('model_data_id','ilike',self)]" string="Script"/>
+    <filter string="Active" name="active" domain="[('active', '=',True)]"/>
+    <filter string="Inactive" name="inactive" domain="[('active', '=',False)]"/>
+</search></field></record>
+<record id="ees_odoo_node.script_search_action" model="ir.actions.act_window">
+	<field name="name">Find script</field>
+	<field name="res_model">ees_odoo_node.script</field>
+	<field name="view_mode">tree,form,pivot,graph</field>
+</record>
+<record id="ees_odoo_node.theonlyconfig" model="ees_odoo_node.config">
+	<field name="name">EESTISOFT NODE CONFIG</field>
+	<field name="nodejs_folder">c:\Program Files\nodejs\</field>
+	<field name="pgconfig">{host: "localhost",port: 5432,database:"ODOO11-SALOTTO",user:"hadmin",password:"qPd4t4b4s3!"}</field>
+	<field name="dbtools">const {Pool,Client}=require("pg");const fs=require("fs");const pgescape=require("pg-escape");const pgpool=new Pool(
+	%PG-CONFIG
+);var elog=new Date().toString()+":started";console.olog=console.log;var esync=true;console.log=function(msg){elog=new Date().toLocaleTimeString()+":"+msg+"\n"+elog;if(esync){esync=false;setTimeout(function(){esync=true},2500);if(elog.length>10000){elog=elog.substring(0,5000)}var cmd=pgescape("UPDATE public.ees_odoo_node_script SET console_js=%L WHERE id="+script_dbid+";",elog);pgpool.query(cmd,(err2,pgdata)=>{if(err2){console.olog(err2.message)}console.olog(msg)});}};
+var ees={
+	select:function(table,query,next,oo){if(!oo){oo={}}var q='SELECT ';if(oo.fields){q=q+oo.fields.join(',');}else{q=q+'*'}q=q+' FROM public.'+table+' WHERE '+query;pgpool.query(q,next);},
+	update:function(table,query,fields,values,next,oo){if(!{oo}){oo={}}var q='UPDATE public.'+table;q=q+' SET ';for(var f=0;f!=fields.length;f++){fields[f]=fields[f]+'='+values[f];}q=q+fields.join(',')+' WHERE '+query;pgpool.query(q,next);}
+};
+	</field>
+	<field name="postexe">const {exec}=require('child_process');const {Pool,Client}=require("pg");const pgescape=require("pg-escape");const fs=require("fs");const pgpool=new Pool(
+	%PG-CONFIG
+);var elog='';console.olog=console.log;var esync=true;console.log=function(msg){elog=new Date().toLocaleTimeString()+":"+msg+"\n"+elog;if(esync){esync=false;setTimeout(function(){esync=true},2500);if(elog.length>10000){elog=elog.substring(0,5000)}var cmd=pgescape("UPDATE public.ees_odoo_node_script SET console_js=%L WHERE id="+script_dbid+";",elog);pgpool.query(cmd,(err2,pgdata)=>{if(err2){console.olog(err2.message)}console.olog(msg)});}};	
+exec('"c:\\Program Files\\nodejs\\node.exe" "'+scriptfile+'"',(err1,stdout,stderr)=>{
+ if(!err1){pgpool.query('UPDATE public.ees_odoo_node_script SET pid=0 WHERE id='+script_dbid,function(err,data){console.log('ended ok');});}
+ else{pgpool.query('UPDATE public.ees_odoo_node_script SET pid=0 WHERE id='+script_dbid,function(err,data){console.log('ended with error '+err1.message);});}
+});
+	</field></record>
+<record id="ees_odoo_node.config_form" model="ir.ui.view"><field name="name">ees_odoo_node.config_form</field>
+<field name="model">ees_odoo_node.config</field><field eval="18" name="priority"/>
+<field name="arch" type="xml"><form create="false"><sheet>
+<div class="oe_title"><h1><field name="name" readonly="1" invisible="0"/></h1></div>
+<group><field name="nodejs_folder"/><field name="pgconfig" widget="ace" ace-mode="json"/></group>
+<label for="install_node_modules" string="Prerequisites for db functionalities"/><button name="install_node_modules" string="npm for postgres" type="object" class="btn-primary" />
+<notebook>
+<page string="dbtools"><field name="dbtools" widget="ace" ace-mode="javascript"/></page>
+<page string="post exec"><field name="postexe" widget="ace" ace-mode="javascript"/></page>
+</notebook>
+</sheet></form></field></record>
+<record id="ees_odoo_node.config_action" model="ir.actions.act_window">
+	<field name="name">Node-Js - Configuration</field>
+	<field name="res_model">ees_odoo_node.config</field>
+	<field name="view_mode">form</field>
+	<field name="context">{'form_view_initial_mode': 'edit', 'force_detailed_view': 'true'}</field>
+	<field name="res_id">1</field><field name="search_view_id" ref=""/>
+	<field name="view_ids" eval="[(5, 0, 0),
+        (0, 0, {'view_mode': 'form', 'view_id': ref('ees_odoo_node.config_form')}), 
+        (0, 0, {'view_mode': 'tree', 'view_id': False})]"/>
+</record>
+<menuitem id="ees_odoo_node.main_menu" name="Node-Js" groups="base.group_user" sequence="5" />
+	<menuitem id="ees_odoo_node.scripts_menu" name="Scripts" groups="base.group_user" parent="ees_odoo_node.main_menu" action="ees_odoo_node.script_search_action" sequence="5" />
+	<menuitem id="ees_odoo_node.config_menu" name="Configuration" groups="base.group_user" parent="ees_odoo_node.main_menu" action="ees_odoo_node.config_action" sequence="6" />
+<!-- OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO
+	 OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO--> 
+<record id="ees_odoo_node.script_sample1" model="ees_odoo_node.script">
+<field name="name">Node-Js Sample1</field>
+<field name="desc">This is a sample script - You must click on  "add db functionalities" in the code tab, to allow the console to be updated.</field>
+<field name="jscontents">
+	console.log('test');
+	setTimeout(function(){console.log('ended');},5000);
+</field></record>
+
+<record id="ees_odoo_node.script_sample2" model="ees_odoo_node.script">
+<field name="name">Node-Js Sample2</field>
+<field name="desc">This is a sample script - You must click on  "add db functionalities" in the code tab, to allow the console to be updated.</field>
+<field name="jscontents">
+//Read the data
+ees.select('res_partner','id=1',function(err,data1){
+	//After the data is read output
+	console.log(JSON.stringify(data1.rows));
+	//Now update something
+	ees.update('res_partner','id=1',['name'],["'Administrator NODE'"],function(err,data2){
+		//Now do something else
+		console.log(JSON.stringify(data2));
+	});
+});
+</field></record>
+</odoo>
