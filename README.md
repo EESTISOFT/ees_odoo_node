@@ -1,8 +1,5 @@
 # ees_odoo_node
-.. image:: https://img.shields.io/badge/licence-AGPL--3-blue.png
-    :target: http://www.gnu.org/licenses/agpl-3.0-standalone.html
-    :alt: License: AGPL-3
-===========================================================
+
 EESTISOFT ODOO NODE-JS
 ===========================================================
 This repository is a node-js module for odoo. It allows to run and edit node-js scripts.
