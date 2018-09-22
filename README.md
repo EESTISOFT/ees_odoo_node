@@ -1,6 +1,6 @@
-# nodejs for odoo
+# nodejs for odoo - by EESTISOFT
 
-EESTISOFT ODOO NODE-JS
+ees_odoo_node
 ===========================================================
 This repository is an odoo module.
 
