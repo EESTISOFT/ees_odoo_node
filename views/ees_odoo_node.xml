@@ -48,7 +48,7 @@ var ees={
 	<field name="postexe">const {exec}=require('child_process');const {Pool,Client}=require("pg");const pgescape=require("pg-escape");const fs=require("fs");const pgpool=new Pool(
 	%PG-CONFIG
 );var elog='';console.olog=console.log;var esync=true;console.log=function(msg){elog=new Date().toLocaleTimeString()+":"+msg+"\n"+elog;if(esync){esync=false;setTimeout(function(){esync=true},2500);if(elog.length>10000){elog=elog.substring(0,5000)}var cmd=pgescape("UPDATE public.ees_odoo_node_script SET console_js=%L WHERE id="+script_dbid+";",elog);pgpool.query(cmd,(err2,pgdata)=>{if(err2){console.olog(err2.message)}console.olog(msg)});}};	
-exec('"c:\\Program Files\\nodejs\\node.exe" "'+scriptfile+'"',(err1,stdout,stderr)=>{
+exec('"%NODEFOLDERnode.exe" "'+scriptfile+'"',(err1,stdout,stderr)=>{
  if(!err1){pgpool.query('UPDATE public.ees_odoo_node_script SET pid=0 WHERE id='+script_dbid,function(err,data){console.log('ended ok');});}
  else{pgpool.query('UPDATE public.ees_odoo_node_script SET pid=0 WHERE id='+script_dbid,function(err,data){console.log('ended with error '+err1.message);});}
 });

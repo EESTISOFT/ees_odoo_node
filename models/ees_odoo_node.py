@@ -63,6 +63,8 @@ class ees_odoo_node_script(models.Model):
 			if record.pid:
 				ppid=record.pid
 				record.pid=0
+				if not record.console_js:
+					record.console_js=''
 				record.console_js='ODOO CLIENT'+' - Forcefully stopped\n'+record.console_js
 				if ppid>0:
 					try:
