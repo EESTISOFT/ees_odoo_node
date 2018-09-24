@@ -81,7 +81,7 @@ exec('"%NODEFOLDERnode.exe" "'+scriptfile+'"',(err1,stdout,stderr)=>{
 	 OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO--> 
 <record id="ees_odoo_node.script_sample1" model="ees_odoo_node.script">
 <field name="name">Node-Js Sample1</field>
-<field name="desc">This is a sample script - You must click on  "add db functionalities" in the code tab, to allow the console to be updated.</field>
+<field name="desc">This is a sample script.</field>
 <field name="jscontents">
 	console.log('test');
 	setTimeout(function(){console.log('ended');},5000);
@@ -89,7 +89,7 @@ exec('"%NODEFOLDERnode.exe" "'+scriptfile+'"',(err1,stdout,stderr)=>{
 
 <record id="ees_odoo_node.script_sample2" model="ees_odoo_node.script">
 <field name="name">Node-Js Sample2</field>
-<field name="desc">This is a sample script - You must click on  "add db functionalities" in the code tab, to allow the console to be updated.</field>
+<field name="desc">This is a sample script.</field>
 <field name="jscontents">
 //Read the data
 ees.select('res_partner','id=1',function(err,data1){
