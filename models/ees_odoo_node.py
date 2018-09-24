@@ -53,7 +53,9 @@ class ees_odoo_node_script(models.Model):
 				with open(fld+fname, 'w+') as out:
 					out.write(ttt+sss+record.jscontents+'\n')
 				with open(fld+'c-'+fname, 'w+') as oout:
-					oout.write(ttt+record.cfg.postexe.replace('%PG-CONFIG',record.cfg.pgconfig)+'\n').replace('%NODEFOLDER',fld)
+					sss=record.cfg.postexe.replace('%PG-CONFIG',record.cfg.pgconfig)+'\n'
+					sss=sss.replace('%NODEFOLDER',fld.replace('\\','\\\\'))
+					oout.write(ttt+sss)
 				#windows
 				p=subprocess.Popen([fld+'node.exe',fld+'c-'+fname])
 				record.pid=p.pid
