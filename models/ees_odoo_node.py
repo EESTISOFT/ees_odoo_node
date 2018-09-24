@@ -49,11 +49,11 @@ class ees_odoo_node_script(models.Model):
 				fname='script'+str(record.id)+'.js'
 				fld=record.cfg.nodejs_folder
 				ttt='const scriptfile="'+fld.replace('\\','\\\\')+fname+'";const script_dbid='+str(record.id)+';const br="<br/>";'
-				sss=record.cfg.dbtools.replace('%PG-CONFIG',record.cfg.pgconfig).replace('%NODEFOLDER',fld)
+				sss=record.cfg.dbtools.replace('%PG-CONFIG',record.cfg.pgconfig)
 				with open(fld+fname, 'w+') as out:
 					out.write(ttt+sss+record.jscontents+'\n')
 				with open(fld+'c-'+fname, 'w+') as oout:
-					oout.write(ttt+record.cfg.postexe.replace('%PG-CONFIG',record.cfg.pgconfig)+'\n')
+					oout.write(ttt+record.cfg.postexe.replace('%PG-CONFIG',record.cfg.pgconfig)+'\n').replace('%NODEFOLDER',fld)
 				#windows
 				p=subprocess.Popen([fld+'node.exe',fld+'c-'+fname])
 				record.pid=p.pid
