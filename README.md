@@ -1,16 +1,16 @@
-# ees_odoo_node
-.. image:: https://img.shields.io/badge/licence-AGPL--3-blue.png
-    :target: http://www.gnu.org/licenses/agpl-3.0-standalone.html
-    :alt: License: AGPL-3
+# nodejs for odoo - by EESTISOFT
+
+ees_odoo_node
 ===========================================================
-EESTISOFT ODOO NODE-JS
-===========================================================
-This repository is a node-js module for odoo. It allows to run and edit node-js scripts.
-- currently works only in windows -
+This repository is an odoo module.
+
+It allows to run and edit node-js scripts - currently works only in windows.
 
 Usage
 =====
 Prerequisite : Install nodejs on the machine.
+  - Download from the odoo store or here - put in the addon directory.
+  - From Odoo - debug mode - Apps\Update App List
   - Install the module
   - In the new Node-Js\Config menu be sure to insert the nodejs installation directiory.
   - In the new Node-Js\Config menu click the npm button once (if you want you can verify precence of module pg in the node_modules folder or npm it yourself.)
@@ -20,11 +20,4 @@ Prerequisite : Install nodejs on the machine.
 
 Maintainer
 ----------
-.. image:: https://officinetesla.it/img/ou-ot.png
-   :target: http://officinetesla.it
-   :width: 390px
-   :align: center
-   :height: 200px
-   :alt: Officine Tesla
-   
-This module is maintained by Hideki Andrea Yamamoto.
+EESTISOFT
