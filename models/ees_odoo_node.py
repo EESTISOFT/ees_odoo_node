@@ -49,7 +49,7 @@ class ees_odoo_node_script(models.Model):
 				fname='script'+str(record.id)+'.js'
 				fld=record.cfg.nodejs_folder
 				ttt='const scriptfile="'+fld.replace('\\','\\\\')+fname+'";const script_dbid='+str(record.id)+';const br="<br/>";'
-				sss=record.cfg.dbtools.replace('%PG-CONFIG',record.cfg.pgconfig)
+				sss=record.cfg.dbtools.replace('%PG-CONFIG',record.cfg.pgconfig).replace('%NODEFOLDER',fld)
 				with open(fld+fname, 'w+') as out:
 					out.write(ttt+sss+record.jscontents+'\n')
 				with open(fld+'c-'+fname, 'w+') as oout:
