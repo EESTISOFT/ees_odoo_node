@@ -36,7 +36,7 @@
 <record id="ees_odoo_node.theonlyconfig" model="ees_odoo_node.config">
 	<field name="name">EESTISOFT NODE CONFIG</field>
 	<field name="nodejs_folder">c:\Program Files\nodejs\</field>
-	<field name="pgconfig">{host: "localhost",port: 5432,database:"ODOO11-SALOTTO",user:"hadmin",password:"qPd4t4b4s3!"}</field>
+	<field name="pgconfig">{host: "localhost",port: 5432,database:"ODOO11-SALOTTO",user:"your_pg_user_for_node",password:"your_password"}</field>
 	<field name="dbtools">const {Pool,Client}=require("pg");const fs=require("fs");const pgescape=require("pg-escape");const pgpool=new Pool(
 	%PG-CONFIG
 );var elog=new Date().toString()+":started";console.olog=console.log;var esync=true;console.log=function(msg){elog=new Date().toLocaleTimeString()+":"+msg+"\n"+elog;if(esync){esync=false;setTimeout(function(){esync=true},2500);if(elog.length>10000){elog=elog.substring(0,5000)}var cmd=pgescape("UPDATE public.ees_odoo_node_script SET console_js=%L WHERE id="+script_dbid+";",elog);pgpool.query(cmd,(err2,pgdata)=>{if(err2){console.olog(err2.message)}console.olog(msg)});}};
