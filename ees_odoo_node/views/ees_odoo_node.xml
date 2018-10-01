@@ -39,7 +39,7 @@
 	<field name="pgconfig">{host: "localhost",port: 5432,database:"ODOO11-SALOTTO",user:"your_pg_user_for_node",password:"your_password"}</field>
 	<field name="dbtools">const {Pool,Client}=require("pg");const fs=require("fs");const pgescape=require("pg-escape");const pgpool=new Pool(
 	%PG-CONFIG
-);var elog=new Date().toString()+":started";console.olog=console.log;var esync=true;console.log=function(msg){elog=new Date().toLocaleTimeString()+":"+msg+"\n"+elog;if(esync){esync=false;setTimeout(function(){esync=true},2500);if(elog.length>10000){elog=elog.substring(0,5000)}var cmd=pgescape("UPDATE public.ees_odoo_node_script SET console_js=%L WHERE id="+script_dbid+";",elog);pgpool.query(cmd,(err2,pgdata)=>{if(err2){console.olog(err2.message)}console.olog(msg)});}};
+);var elog=new Date().toLocaleTimeString()+":started";console.olog=console.log;var esync=true;console.log=function(msg){elog=new Date().toLocaleTimeString()+":"+msg+"\n"+elog;if(esync){esync=false;setTimeout(function(){esync=true},2500);if(elog.length>10000){elog=elog.substring(0,5000)}var cmd=pgescape("UPDATE public.ees_odoo_node_script SET console_js=CONCAT(%L,'\n',console_js) WHERE id="+script_dbid+";",elog);elog='';pgpool.query(cmd,(err2,pgdata)=>{if(err2){console.olog(err2.message)}console.olog(msg)});}};
 var ees={
 	select:function(table,query,next,oo){if(!oo){oo={}}var q='SELECT ';if(oo.fields){q=q+oo.fields.join(',');}else{q=q+'*'}q=q+' FROM public.'+table+' WHERE '+query;pgpool.query(q,next);},
 	update:function(table,query,fields,values,next,oo){if(!{oo}){oo={}}var q='UPDATE public.'+table;q=q+' SET ';for(var f=0;f!=fields.length;f++){fields[f]=fields[f]+'='+values[f];}q=q+fields.join(',')+' WHERE '+query;pgpool.query(q,next);}
