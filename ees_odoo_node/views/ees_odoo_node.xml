@@ -7,7 +7,16 @@
 	<sheet><div class="oe_button_box" name="button_box"><button name="toggle_active" type="object" class="oe_stat_button" icon="fa-archive">
 		<field name="active" widget="boolean_button" options="{&quot;terminology&quot;: &quot;archive&quot;}"/></button>
 	</div><div class="oe_title"><label class="oe_edit_only" for="name" string="Nome"/><h1><field name="name"/></h1></div>
-	<hr/>	<label for="desc" string="Descrizione"/><field name="desc"/><field name="pid" invisible="1"/>
+	<hr/>	
+	<button	name="install_service" string="install service" type="object" class="btn-primary" />
+	<button	name="remove_service" string="remove service" type="object" class="btn-primary" />
+	<button	name="state_service" string="state service" type="object" class="btn-primary" />
+	<button	name="start_service" string="start service" type="object" class="btn-primary" />
+	<button	name="stop_service" string="stop service" type="object" class="btn-primary" />
+	<br/>
+	<button	name="schedule_task" string="schedule task" type="object" class="btn-primary" />
+	<br/>
+	<label for="desc" string="Descrizione"/><field name="desc"/><field name="pid" invisible="1"/>
 	<notebook>
 		<page string="Node-Js console"><button name="run_script_once" string="esegui" type="object" class="btn-primary" attrs="{'invisible':[('pid','>',0)]}"/><button
 			name="stop_script_once" string="stop" type="object" class="btn-primary" attrs="{'invisible':[('pid','=',0)]}" /><button
@@ -35,7 +44,8 @@
 </record>
 <record id="ees_odoo_node.theonlyconfig" model="ees_odoo_node.config">
 	<field name="name">EESTISOFT NODE CONFIG</field>
-	<field name="nodejs_folder">c:\Program Files\nodejs\</field>
+	<field name="nodejs_folder">C:\Program Files\nodejs\</field>
+	<field name="nssm_folder">C:\Program Files (x86)\Odoo 11.0\nssm\win64\</field>
 	<field name="pgconfig">{host: "localhost",port: 5432,database:"ODOO11-SALOTTO",user:"your_pg_user_for_node",password:"your_password"}</field>
 	<field name="dbtools">const {Pool,Client}=require("pg");const fs=require("fs");const pgescape=require("pg-escape");const pgpool=new Pool(
 	%PG-CONFIG
@@ -47,7 +57,7 @@ var ees={
 	</field>
 	<field name="postexe">const {exec}=require('child_process');const {Pool,Client}=require("pg");const pgescape=require("pg-escape");const fs=require("fs");const pgpool=new Pool(
 	%PG-CONFIG
-);console.olog=console.log;var esync=true;console.log=function(msg){msg=new Date().toLocaleTimeString()+":"+msg;if(esync){esync=false;setTimeout(function(){esync=true},2500);var cmd=pgescape("UPDATE public.ees_odoo_node_script SET console_js=CONCAT(%L,'\n',console_js) WHERE id="+script_dbid+";",msg);pgpool.query(cmd,(err2,pgdata)=>{if(err2){console.olog(err2.message)}console.olog(msg)});}};	
+;console.olog=console.log;var esync=true;console.log=function(msg){msg=new Date().toLocaleTimeString()+":"+msg;if(esync){esync=false;setTimeout(function(){esync=true},2500);var cmd=pgescape("UPDATE public.ees_odoo_node_script SET console_js=CONCAT(%L,'\n',console_js) WHERE id="+script_dbid+";",msg);pgpool.query(cmd,(err2,pgdata)=>{if(err2){console.olog(err2.message)}console.olog(msg)});}};	
 exec('"%NODEFOLDERnode.exe" "'+scriptfile+'"',(err1,stdout,stderr)=>{
  if(!err1){pgpool.query('UPDATE public.ees_odoo_node_script SET pid=0 WHERE id='+script_dbid,function(err,data){console.log('ended ok');});}
  else{pgpool.query('UPDATE public.ees_odoo_node_script SET pid=0 WHERE id='+script_dbid,function(err,data){console.log('ended with error '+err1.message);});}
@@ -57,8 +67,22 @@ exec('"%NODEFOLDERnode.exe" "'+scriptfile+'"',(err1,stdout,stderr)=>{
 <field name="model">ees_odoo_node.config</field><field eval="18" name="priority"/>
 <field name="arch" type="xml"><form create="false"><sheet>
 <div class="oe_title"><h1><field name="name" readonly="1" invisible="0"/></h1></div>
-<group><field name="nodejs_folder"/><field name="pgconfig" widget="ace" ace-mode="json"/></group>
+<group><field name="nodejs_folder"/><field name="nssm_folder"/><field name="pgconfig" widget="ace" ace-mode="json"/></group>
 <label for="install_node_modules" string="Prerequisites for db functionalities"/><button name="install_node_modules" string="npm for postgres" type="object" class="btn-primary" />
+<br/>
+<label for="test_node" string="Test Node File"/><button name="test_node_file" string="test node" type="object" class="btn-primary" />
+<field name="testNode" widget="boolean_button" options="{'terminology':{'string_true': 'True','hover_true': 'True','string_false': 'False','hover_false': 'False'}}"/>
+<br/>
+<label for="test_npm" string="Test Npm"/><button name="test_npm" string="test npm" type="object" class="btn-primary" />
+<field name="testNpm" widget="boolean_button" options="{'terminology':{'string_true': 'True','hover_true': 'True','string_false': 'False','hover_false': 'False'}}"/>
+<br/>
+<label for="test_db_access" string="Test Db Access"/><button name="test_db_access" string="test db access" type="object" class="btn-primary" />
+<field name="testDbAccess" widget="boolean_button" options="{'terminology':{'string_true': 'True','hover_true': 'True','string_false': 'False','hover_false': 'False'}}"/>
+<br/>
+<label for="test_db_write" string="Test Db Write"/><button name="test_db_write" string="test db write" type="object" class="btn-primary" />
+<field name="testDbWrite" widget="boolean_button" options="{'terminology':{'string_true': 'True','hover_true': 'True','string_false': 'False','hover_false': 'False'}}"/>
+<br/>
+<button name="set_all_test_false" string="reset test" type="object" class="btn-primary" />
 <notebook>
 <page string="dbtools"><field name="dbtools" widget="ace" ace-mode="javascript"/></page>
 <page string="post exec"><field name="postexe" widget="ace" ace-mode="javascript"/></page>

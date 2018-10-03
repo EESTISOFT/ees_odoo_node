@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# © 2017 Hideki Yamamoto
+# © 2018 Hideki Yamamoto
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl.html).
 	
 
@@ -14,23 +14,101 @@ import win32service
 import win32serviceutil
 
 import subprocess
+from subprocess import Popen, PIPE
 import sys
 from os.path import dirname, join, split
+from time import sleep
+
 
 
 class ees_odoo_node_configt(models.Model):
 	_name='ees_odoo_node.config'
 	name=fields.Char('Name')
 	nodejs_folder=fields.Char('Node-Js Folder')
+	nssm_folder=fields.Char('NSSM Folder')
 	pgconfig=fields.Text('Postgres config')
 	dbtools=fields.Text('DB tools')
 	postexe=fields.Text('Post exe')
+	testNode = fields.Boolean('Test Node', default=False)
+	testNpm = fields.Boolean('Test Npm', default=False)
+	testDbAccess = fields.Boolean('Test DB Access', default=False)
+	testDbWrite = fields.Boolean('Test DB Write', default=False)
+	
 	@api.depends('nodejs_folder')
 	def install_node_modules(self):
 		for record in self:
 			fld=record.nodejs_folder			
 			subprocess.Popen([fld+'npm.cmd', 'i','pg','pg-escape','--save','--prefix',fld])
+			
+
+	#  sets the boolean result test field to false!
+	@api.depends('testNode','testNpm','testDbAccess','testDbWrite')
+	def set_all_test_false(self):
+		for record in self:
+			record.testNode = False
+			record.testNpm = False
+			record.testDbAccess = False
+			record.testDbWrite = False
+
+	def read_file(self):
+		file = open('eesti.txt', 'r')
+		self.testNode = True
+
+	@api.depends('testNode')
+	def test_node_file(self):
+		fld=self.nodejs_folder
+		try:
+			proc = subprocess.Popen([fld+'node.exe', fld+'createFile.js'], stdin=PIPE, stdout=PIPE, stderr=PIPE)
+			(stdout, stderr) = proc.communicate()
+			exit_code = proc.wait()
+			if exit_code != 0:
+					#testNode = False
+					self.testNode = False
+					return stderr
+			else:
+					#read_file
+					file = open('eesti.txt', 'r')
+					self.testNode = True
+					return stdout
+		except Exception:
+			self.testNode = False
+		else:
+			self.testNode = False
+			
+	@api.depends('testNpm')
+	def test_npm(self):
+		fld=self.nodejs_folder
+		if (((os.path.isdir(fld+'/node_modules/pg'))) and ((os.path.exists(fld+'/node_modules/pg')))):
+			self.testNpm = True
+		else:
+			self.testNode = False
 	
+	@api.depends('testDbAccess')
+	def test_db_access(self):
+		fld=self.nodejs_folder
+		proc = subprocess.Popen([fld+'node.exe', fld+'dbAccess.js'], stdin=PIPE, stdout=PIPE, stderr=PIPE)
+		(stdout, stderr) = proc.communicate()
+		exit_code = proc.wait()
+		if exit_code != 0:
+				#testNode = False
+				self.testDbAccess = False
+				return stderr
+		else:
+				self.testDbAccess = True
+				return stdout
+	
+	@api.depends('testDbWrite')
+	def test_db_write(self):
+		try:
+			self.env.cr.execute('insert into ees_odoo_node_config values (666)')
+			self.env.cr.execute('delete from ees_odoo_node_config values where id=(666)')
+			self.testDbWrite = True
+			return True
+		except Exception:
+			self.testDbWrite = False
+		else:
+			self.testDbWrite = False
+
 class ees_odoo_node_script(models.Model):
 	_name='ees_odoo_node.script'
 	name=fields.Char('Name')
@@ -40,7 +118,7 @@ class ees_odoo_node_script(models.Model):
 	console_js=fields.Text('console output')
 	cfg=fields.Many2one('ees_odoo_node.config',default=1)
 	pid=fields.Integer('pid')
-
+	
 	@api.multi
 	@api.depends('jscontents')
 	def run_script_once(self):
@@ -82,7 +160,48 @@ class ees_odoo_node_script(models.Model):
 	def clean_console(self):
 		for record in self:
 			record.console_js=''
+			
+	@api.multi
+	@api.depends('jscontents','cfg')
+	def install_service(self):
+		fname='script'+str(self.id)+'.js'
+		fld=self.cfg.nssm_folder
+		proc = subprocess.Popen([fld+'nssm.exe', 'install', fname, fld+fname], stdin=PIPE, stdout=PIPE, stderr=PIPE)
+		(stdout, stderr) = proc.communicate()
+		exit_code = proc.wait()
+		if exit_code != 0:
+				#self.testDbAccess = False
+				# console error
+				return stderr
+		else:
+				#self.testDbAccess = True
+				# console success
+				return stdout                
+				
+	def remove_service(self):
+		fname='script'+str(self.id)+'.js'
+		fld=self.cfg.nssm_folder
+		proc = subprocess.Popen([fld+'nssm', 'remove', fname, 'confirm'], stdin=PIPE, stdout=PIPE, stderr=PIPE)
+	def state_service(self):
+		fname='script'+str(self.id)+'.js'
+		fld=self.cfg.nssm_folder
+		proc = subprocess.Popen([fld+'nssm', 'status', fname], stdin=PIPE, stdout=PIPE, stderr=PIPE)
+	def start_service(self):
+		fname='script'+str(self.id)+'.js'
+		fld=self.cfg.nssm_folder
+		proc = subprocess.Popen([fld+'nssm', 'start', fname], stdin=PIPE, stdout=PIPE, stderr=PIPE)
+	def stop_service(self):
+		fname='script'+str(self.id)+'.js'
+		fld=self.cfg.nssm_folder
+		proc = subprocess.Popen([fld+'nssm', 'stop', fname], stdin=PIPE, stdout=PIPE, stderr=PIPE)
+	
+	def schedule_task(self):
+		fname='script'+str(self.id)+'.js'
+		fld=self.cfg.nodejs_folder
+		#	SchTasks /Create /SC DAILY /TN “My Task” /TR “C:RunMe.bat” /ST 09:00
+		proc = subprocess.Popen(['SchTasks', 'Create', '/SC', 'DAILY', '/TN', '\"'+fname+'\"', '/TR', '\"'+fld+fname+'\"', '/ST', '09:00'], stdin=PIPE, stdout=PIPE, stderr=PIPE)
 
+	
 	@api.depends('jscontents','cfg')
 	def add_db_caps(self):
 		for record in self:
