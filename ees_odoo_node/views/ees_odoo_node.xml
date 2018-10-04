@@ -66,11 +66,9 @@ exec('"%NODEFOLDERnode.exe" "'+scriptfile+'"',(err1,stdout,stderr)=>{
  else{pgpool.query('UPDATE public.ees_odoo_node_script SET pid=0 WHERE id='+script_dbid,function(err,data){console.log('ended with error '+err1.message);});}
 });
 	</field>
-	<field name="service">const scriptfile="c:\\Program Files\\nodejs\\script1.js";const script_dbid=1;
-const {exec}=require('child_process');const {Pool,Client}=require("pg");const pgescape=require("pg-escape");const fs=require("fs");const pgpool=new Pool(
+	<field name="service">const {exec}=require('child_process');const {Pool,Client}=require("pg");const pgescape=require("pg-escape");const fs=require("fs");const pgpool=new Pool(
 	%PG-CONFIG
-);var elog='';console.olog=console.log;var esync=true;console.log=function(msg){elog=new Date().toLocaleTimeString()+":"+msg+"\n"+elog;if(esync){esync=false;setTimeout(function(){esync=true},2500);var cmd=pgescape("UPDATE public.ees_odoo_node_script SET console_js=CONCAT(%L,console_js) WHERE id="+script_dbid+";",elog);elog='';pgpool.query(cmd,(err2,pgdata)=>{if(err2){console.olog(err2.message)}console.olog(msg)});}};
-//TODO: Above line in the sql, change the console target field to the new service console field
+);var elog='';console.olog=console.log;var esync=true;console.log=function(msg){elog=new Date().toLocaleTimeString()+":"+msg+"\n"+elog;if(esync){esync=false;setTimeout(function(){esync=true},2500);var cmd=pgescape("UPDATE public.ees_odoo_node_script SET console_service=CONCAT(%L,console_service) WHERE id="+script_dbid+";",elog);elog='';pgpool.query(cmd,(err2,pgdata)=>{if(err2){console.olog(err2.message)}console.olog(msg)});}};
 	</field>
 	</record>
 <record id="ees_odoo_node.config_form" model="ir.ui.view"><field name="name">ees_odoo_node.config_form</field>
