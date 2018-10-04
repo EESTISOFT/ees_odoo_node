@@ -69,6 +69,24 @@ exec('"%NODEFOLDERnode.exe" "'+scriptfile+'"',(err1,stdout,stderr)=>{
 	<field name="service">const {exec}=require('child_process');const {Pool,Client}=require("pg");const pgescape=require("pg-escape");const fs=require("fs");const pgpool=new Pool(
 	%PG-CONFIG
 );var elog='';console.olog=console.log;var esync=true;console.log=function(msg){elog=new Date().toLocaleTimeString()+":"+msg+"\n"+elog;if(esync){esync=false;setTimeout(function(){esync=true},2500);var cmd=pgescape("UPDATE public.ees_odoo_node_script SET console_service=CONCAT(%L,console_service) WHERE id="+script_dbid+";",elog);elog='';pgpool.query(cmd,(err2,pgdata)=>{if(err2){console.olog(err2.message)}console.olog(msg)});}};
+var MAXERRORS=5;var IN_MINUTES=5;
+var RESTART_COUNT=0;
+
+function decrease(){RESTART_COUNT=RESTART_COUNT-1}
+function increase(){RESTART_COUNT=RESTART_COUNT+1;setTimeout(decrease,1000*60*IN_MINUTES);return RESTART_COUNT;}
+function start(){
+	exec('"%NODEFOLDERnode.exe" "'+scriptfile+'"',(err1,stdout,stderr)=>{console.olog('one');
+		if(increase()&lt;MAXERRORS){
+			if(!err1){console.log('restarted service');}else{console.log('restarted after error '+err1.message);}
+			start();
+		}else{
+			//proc = subprocess.Popen([fld+'nssm', 'status', fname], stdin=PIPE, stdout=PIPE, stderr=PIPE)
+			if(!err1){console.log('service ended ok');}else{console.log('service ended with error '+err1.message);}
+		}
+	});
+}
+start();
+console.log(new Date().toLocaleTimeString()+":Service started");
 	</field>
 	</record>
 <record id="ees_odoo_node.config_form" model="ir.ui.view"><field name="name">ees_odoo_node.config_form</field>
@@ -150,9 +168,8 @@ function start(){
 			if(!err1){console.log('restarted service');}else{console.log('restarted after error '+err1.message);}
 			start();
 		}else{
-			proc = subprocess.Popen([fld+'nssm', 'status', fname], stdin=PIPE, stdout=PIPE, stderr=PIPE)
-			(stdout, stderr) = proc.communicate()
-			if(!err1){console.log(stdout);}else{console.log(stderr);}
+			//proc = subprocess.Popen([fld+'nssm', 'status', fname], stdin=PIPE, stdout=PIPE, stderr=PIPE)
+			if(!err1){console.log('service ended ok');}else{console.log('service ended with error '+err1.message);}
 		}
 	});
 }
