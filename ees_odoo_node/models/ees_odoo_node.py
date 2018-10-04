@@ -29,6 +29,7 @@ class ees_odoo_node_configt(models.Model):
 	pgconfig=fields.Text('Postgres config')
 	dbtools=fields.Text('DB tools')
 	postexe=fields.Text('Post exe')
+	service=fields.Text('Service')
 	testNode = fields.Boolean('Test Node', default=False)
 	testNpm = fields.Boolean('Test Npm', default=False)
 	testDbAccess = fields.Boolean('Test DB Access', default=False)
@@ -174,8 +175,9 @@ class ees_odoo_node_script(models.Model):
 				with open(fld+fname, 'w+') as out:
 					out.write(ttt+sss+record.jscontents+'\n')
 				with open(fld+'svc-'+fname, 'w+') as oout:
-					sss=record.cfg.postexe.replace('%PG-CONFIG',record.cfg.pgconfig)+'\n'
+					sss=record.cfg.service.replace('%PG-CONFIG',record.cfg.pgconfig)+'\n'
 					sss=sss.replace('%NODEFOLDER',fld.replace('\\','\\\\'))
+					oout.write(ttt+sss)
 				#windows
 				fldNSSM=record.cfg.nssm_folder
 				p=subprocess.Popen([fldNSSM+'nssm.exe', 'install', fname, fld+'svc-'+fname], stdin=PIPE, stdout=PIPE, stderr=PIPE)
