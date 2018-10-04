@@ -116,6 +116,7 @@ class ees_odoo_node_script(models.Model):
 	active = fields.Boolean('Active', default=True)
 	jscontents=fields.Text('script content', default='\n\n\n\n\n\n\n\n')	
 	console_js=fields.Text('console output')
+	console_service=fields.Text('service console output')
 	cfg=fields.Many2one('ees_odoo_node.config',default=1)
 	pid=fields.Integer('pid')
 	
@@ -164,19 +165,21 @@ class ees_odoo_node_script(models.Model):
 	@api.multi
 	@api.depends('jscontents','cfg')
 	def install_service(self):
-		fname='script'+str(self.id)+'.js'
-		fld=self.cfg.nssm_folder
-		proc = subprocess.Popen([fld+'nssm.exe', 'install', fname, fld+fname], stdin=PIPE, stdout=PIPE, stderr=PIPE)
-		(stdout, stderr) = proc.communicate()
-		exit_code = proc.wait()
-		if exit_code != 0:
-				#self.testDbAccess = False
-				# console error
-				return stderr
-		else:
-				#self.testDbAccess = True
-				# console success
-				return stdout                
+		for record in self:
+			if record.jscontents:
+				fname='script'+str(record.id)+'.js'
+				fld=record.cfg.nodejs_folder
+				ttt='const scriptfile="'+fld.replace('\\','\\\\')+fname+'";const script_dbid='+str(record.id)+';const br="<br/>";'
+				sss=record.cfg.dbtools.replace('%PG-CONFIG',record.cfg.pgconfig)
+				with open(fld+fname, 'w+') as out:
+					out.write(ttt+sss+record.jscontents+'\n')
+				with open(fld+'svc-'+fname, 'w+') as oout:
+					sss=record.cfg.postexe.replace('%PG-CONFIG',record.cfg.pgconfig)+'\n'
+					sss=sss.replace('%NODEFOLDER',fld.replace('\\','\\\\'))
+				#windows
+				fldNSSM=record.cfg.nssm_folder
+				p=subprocess.Popen([fldNSSM+'nssm.exe', 'install', fname, fld+'svc-'+fname], stdin=PIPE, stdout=PIPE, stderr=PIPE)
+				record.pid=p.pid          
 				
 	def remove_service(self):
 		fname='script'+str(self.id)+'.js'
