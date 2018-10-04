@@ -180,7 +180,7 @@ class ees_odoo_node_script(models.Model):
 					oout.write(ttt+sss)
 				#windows
 				fldNSSM=record.cfg.nssm_folder
-				p=subprocess.Popen([fldNSSM+'nssm.exe', 'install', fname, fld+'svc-'+fname], stdin=PIPE, stdout=PIPE, stderr=PIPE)
+				p=subprocess.Popen([fldNSSM+'nssm.exe', 'install', fname, fld+'node.exe', 'svc-'+fname], stdin=PIPE, stdout=PIPE, stderr=PIPE)
 				record.pid=p.pid          
 				
 	def remove_service(self):
