@@ -8,23 +8,26 @@
 		<field name="active" widget="boolean_button" options="{&quot;terminology&quot;: &quot;archive&quot;}"/></button>
 	</div><div class="oe_title"><label class="oe_edit_only" for="name" string="Nome"/><h1><field name="name"/></h1></div>
 	<hr/>	
-	<button	name="install_service" string="install service" type="object" class="btn-primary" />
-	<button	name="remove_service" string="remove service" type="object" class="btn-primary" />
-	<button	name="state_service" string="state service" type="object" class="btn-primary" />
-	<button	name="start_service" string="start service" type="object" class="btn-primary" />
-	<button	name="stop_service" string="stop service" type="object" class="btn-primary" />
-	<br/>
-	<button	name="schedule_task" string="schedule task" type="object" class="btn-primary" />
-	<br/>
 	<label for="desc" string="Descrizione"/><field name="desc"/><field name="pid" invisible="1"/>
 	<notebook>
-		<page string="Node-Js console"><button name="run_script_once" string="esegui" type="object" class="btn-primary" attrs="{'invisible':[('pid','>',0)]}"/><button
-			name="stop_script_once" string="stop" type="object" class="btn-primary" attrs="{'invisible':[('pid','=',0)]}" /><button
-			name="fake_refresh" string="aggiorna console" type="object" class="btn-primary" /><button
-			name="clean_console" string="pulisci console" type="object" class="btn-primary" />
+		<page string="Node-Js console">
+			<button name="run_script_once" string="esegui" type="object" class="btn-primary" attrs="{'invisible':[('pid','>',0)]}"/>
+			<button	name="stop_script_once" string="stop" type="object" class="btn-primary" attrs="{'invisible':[('pid','=',0)]}" />
+			<button name="fake_refresh" string="aggiorna console" type="object" class="btn-primary" />
+			<button name="clean_console" string="pulisci console" type="object" class="btn-primary" />
 			<field name="console_js" readonly="1"/>		
 		</page>
 		<page string="Node-Js code"><field name="jscontents" widget="ace" ace-mode="javascript"/></page>
+		<page string="Service console">
+			<button	name="install_service" string="install service" type="object" class="btn-primary" />
+			<button	name="remove_service" string="remove service" type="object" class="btn-primary" />
+			<button	name="state_service" string="state service" type="object" class="btn-primary" />
+			<button	name="start_service" string="start service" type="object" class="btn-primary" />
+			<button	name="stop_service" string="stop service" type="object" class="btn-primary" />
+			<br/>
+			<button	name="schedule_task" string="schedule task" type="object" class="btn-primary" />
+			<field name="console_service" readonly="1"/>	
+		</page>
 	</notebook>
 </sheet></form></field></record>
 <record id="ees_odoo_node.script_tree" model="ir.ui.view"><field name="name">ees_odoo_node.script_tree</field>
@@ -57,12 +60,19 @@ var ees={
 	</field>
 	<field name="postexe">const {exec}=require('child_process');const {Pool,Client}=require("pg");const pgescape=require("pg-escape");const fs=require("fs");const pgpool=new Pool(
 	%PG-CONFIG
-);console.olog=console.log;var esync=true;console.log=function(msg){msg=new Date().toLocaleTimeString()+":"+msg;if(esync){esync=false;setTimeout(function(){esync=true},2500);var cmd=pgescape("UPDATE public.ees_odoo_node_script SET console_js=CONCAT(%L,'\n',console_js) WHERE id="+script_dbid+";",msg);pgpool.query(cmd,(err2,pgdata)=>{if(err2){console.olog(err2.message)}console.olog(msg)});}};	
+);console.olog=console.log;var esync=true;console.log=function(msg){msg=new Date().toLocaleTimeString()+":"+msg;if(esync){esync=false;setTimeout(function(){esync=true},2500);var cmd=pgescape("UPDATE public.ees_odoo_node_script SET console_js=CONCAT(%L,'\n',console_js) WHERE id="+script_dbid+";",msg);pgpool.query(cmd,(err2,pgdata)=>{if(err2){console.olog(err2.message)}console.olog(msg)});}};
 exec('"%NODEFOLDERnode.exe" "'+scriptfile+'"',(err1,stdout,stderr)=>{
  if(!err1){pgpool.query('UPDATE public.ees_odoo_node_script SET pid=0 WHERE id='+script_dbid,function(err,data){console.log('ended ok');});}
  else{pgpool.query('UPDATE public.ees_odoo_node_script SET pid=0 WHERE id='+script_dbid,function(err,data){console.log('ended with error '+err1.message);});}
 });
-	</field></record>
+	</field>
+	<field name="service">const scriptfile="c:\\Program Files\\nodejs\\script1.js";const script_dbid=1;
+const {exec}=require('child_process');const {Pool,Client}=require("pg");const pgescape=require("pg-escape");const fs=require("fs");const pgpool=new Pool(
+	%PG-CONFIG
+);var elog='';console.olog=console.log;var esync=true;console.log=function(msg){elog=new Date().toLocaleTimeString()+":"+msg+"\n"+elog;if(esync){esync=false;setTimeout(function(){esync=true},2500);var cmd=pgescape("UPDATE public.ees_odoo_node_script SET console_js=CONCAT(%L,console_js) WHERE id="+script_dbid+";",elog);elog='';pgpool.query(cmd,(err2,pgdata)=>{if(err2){console.olog(err2.message)}console.olog(msg)});}};
+//TODO: Above line in the sql, change the console target field to the new service console field
+	</field>
+	</record>
 <record id="ees_odoo_node.config_form" model="ir.ui.view"><field name="name">ees_odoo_node.config_form</field>
 <field name="model">ees_odoo_node.config</field><field eval="18" name="priority"/>
 <field name="arch" type="xml"><form create="false"><sheet>
@@ -100,7 +110,7 @@ exec('"%NODEFOLDERnode.exe" "'+scriptfile+'"',(err1,stdout,stderr)=>{
 </record>
 <menuitem id="ees_odoo_node.main_menu" name="Node-Js" groups="base.group_user" sequence="5" />
 	<menuitem id="ees_odoo_node.scripts_menu" name="Scripts" groups="base.group_user" parent="ees_odoo_node.main_menu" action="ees_odoo_node.script_search_action" sequence="5" />
-	<menuitem id="ees_odoo_node.config_menu" name="Configuration" groups="base.group_user" parent="ees_odoo_node.main_menu" action="ees_odoo_node.config_action" sequence="6" />
+<menuitem id="ees_odoo_node.config_menu" name="Configuration" groups="base.group_user" parent="ees_odoo_node.main_menu" action="ees_odoo_node.config_action" sequence="6" />
 <!-- OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO
 	 OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO--> 
 <record id="ees_odoo_node.script_sample1" model="ees_odoo_node.script">
@@ -126,4 +136,30 @@ ees.select('res_partner','id=1',function(err,data1){
 	});
 });
 </field></record>
+
+<record id="ees_odoo_node.script_sample3" model="ees_odoo_node.script">
+<field name="name">Node-Js Sample3</field>
+<field name="desc">This is a sample script.</field>
+<field name="jscontents">
+var MAXERRORS=5;var IN_MINUTES=5;
+var RESTART_COUNT=0;
+
+function decrease(){RESTART_COUNT=RESTART_COUNT-1}
+function increase(){RESTART_COUNT=RESTART_COUNT+1;setTimeout(decrease,1000*60*IN_MINUTES);return RESTART_COUNT;}
+function start(){
+	exec('"%NODEFOLDERnode.exe" "'+scriptfile+'"',(err1,stdout,stderr)=>{console.olog('one');
+		if(increase()&lt;MAXERRORS){
+			if(!err1){console.log('restarted service');}else{console.log('restarted after error '+err1.message);}
+			start();
+		}else{
+			proc = subprocess.Popen([fld+'nssm', 'status', fname], stdin=PIPE, stdout=PIPE, stderr=PIPE)
+			(stdout, stderr) = proc.communicate()
+			if(!err1){console.log(stdout);}else{console.log(stderr);}
+		}
+	});
+}
+start();
+console.log(new Date().toLocaleTimeString()+":Service started");
+</field>
+</record>
 </odoo>
