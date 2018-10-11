@@ -12,7 +12,7 @@ Adds nodejs
 Made with love.
     """,
     'depends': ['base'],
-    'data': ['views/ees_odoo_node.xml'],
+    'data': ['views/ees_odoo_node.xml','views/ir.model.access.csv'],
     'installable': True,
     'application': True,
     'auto_install': False
