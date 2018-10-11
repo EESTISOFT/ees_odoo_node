@@ -1,0 +1,3 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+ees_odoo_node_config,ees_odoo_node.config,model_ees_odoo_node_config,base.group_user,1,1,1,1
+ees_odoo_node_script,ees_odoo_node.script,model_ees_odoo_node_script,base.group_user,1,1,1,1
