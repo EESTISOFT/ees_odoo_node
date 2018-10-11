@@ -124,7 +124,15 @@ console.log(new Date().toLocaleTimeString()+":Service started");
         (0, 0, {'view_mode': 'form', 'view_id': ref('ees_odoo_node.config_form')}), 
         (0, 0, {'view_mode': 'tree', 'view_id': False})]"/>
 </record>
-<menuitem id="ees_odoo_node.main_menu" name="Node-Js" groups="base.group_user" sequence="5" />
+
+<!-- ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: -->
+<!-- ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: -->
+<record id="ees_odoo_node.g_node" model="res.groups">
+	<field name="name">EES Node-Js</field>
+</record>
+<!-- ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: -->
+<!-- ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: -->
+<menuitem id="ees_odoo_node.main_menu" name="Node-Js" groups="ees_odoo_node.g_node" sequence="5" />
 	<menuitem id="ees_odoo_node.scripts_menu" name="Scripts" groups="base.group_user" parent="ees_odoo_node.main_menu" action="ees_odoo_node.script_search_action" sequence="5" />
 <menuitem id="ees_odoo_node.config_menu" name="Configuration" groups="base.group_user" parent="ees_odoo_node.main_menu" action="ees_odoo_node.config_action" sequence="6" />
 <!-- OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO
