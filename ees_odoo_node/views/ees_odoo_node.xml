@@ -25,8 +25,15 @@
 			<button	name="start_service" string="start service" type="object" class="btn-primary" />
 			<button	name="stop_service" string="stop service" type="object" class="btn-primary" />
 			<br/>
-			<button	name="schedule_task" string="schedule task" type="object" class="btn-primary" />
+			<button name="fake_refresh" string="aggiorna console" type="object" class="btn-primary" />
+			<button name="clean_console_service" string="pulisci console" type="object" class="btn-primary" />
 			<field name="console_service" readonly="1"/>	
+		</page>
+		<page string="Schedule Task">
+			<button	name="schedule_task" string="schedule task" type="object" class="btn-primary" />
+			<br/>
+			<field name="frequency" widget="selection"/>
+			<field name="dayTime"/>
 		</page>
 	</notebook>
 </sheet></form></field></record>
@@ -88,6 +95,33 @@ function start(){
 start();
 console.log(new Date().toLocaleTimeString()+":Service started");
 	</field>
+<field name="createFile">const {exec}=require('child_process');const {Pool,Client}=require("pg");const pgescape=require("pg-escape");const fs=require("fs");const pgpool=new Pool(
+	%PG-CONFIG
+);console.olog=console.log;var esync=true;console.log=function(msg){msg=new Date().toLocaleTimeString()+":"+msg;if(esync){esync=false;setTimeout(function(){esync=true},2500);var cmd=pgescape("UPDATE public.ees_odoo_node_script SET console_js=CONCAT(%L,'\n',console_js) WHERE id="+script_dbid+";",msg);pgpool.query(cmd,(err2,pgdata)=>{if(err2){console.olog(err2.message)}console.olog(msg)});}};
+ 
+fs.writeFile('eesti.txt', 'Learn Node FS module', function (err) {
+  if (err) throw err;
+  console.log('File is created successfully.');
+}); 
+
+	</field>
+<field name="dbAccess">const {exec}=require('child_process');const {Pool,Client}=require("pg");const pgescape=require("pg-escape");const fs=require("fs");const pgpool=new Pool(
+	%PG-CONFIG
+);console.olog=console.log;var esync=true;console.log=function(msg){msg=new Date().toLocaleTimeString()+":"+msg;if(esync){esync=false;setTimeout(function(){esync=true},2500);var cmd=pgescape("UPDATE public.ees_odoo_node_script SET console_js=CONCAT(%L,'\n',console_js) WHERE id="+script_dbid+";",msg);pgpool.query(cmd,(err2,pgdata)=>{if(err2){console.olog(err2.message)}console.olog(msg)});}};
+ 
+async function dbAccess(){
+    
+    await pgpool.connect();
+    const res = await pgpool.query('SELECT $1::text as message', ['Hello world!']);
+    console.log(res.rows[0].message); // Hello world!
+    await pgpool.end();
+};
+
+dbAccess()
+  .then(console.log)
+  .catch(console.error)	
+	</field>
+	
 	</record>
 <record id="ees_odoo_node.config_form" model="ir.ui.view"><field name="name">ees_odoo_node.config_form</field>
 <field name="model">ees_odoo_node.config</field><field eval="18" name="priority"/>
@@ -109,6 +143,7 @@ console.log(new Date().toLocaleTimeString()+":Service started");
 <field name="testDbWrite" widget="boolean_button" options="{'terminology':{'string_true': 'True','hover_true': 'True','string_false': 'False','hover_false': 'False'}}"/>
 <br/>
 <button name="set_all_test_false" string="reset test" type="object" class="btn-primary" />
+
 <notebook>
 <page string="dbtools"><field name="dbtools" widget="ace" ace-mode="javascript"/></page>
 <page string="post exec"><field name="postexe" widget="ace" ace-mode="javascript"/></page>
