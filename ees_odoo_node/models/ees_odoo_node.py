@@ -30,6 +30,8 @@ class ees_odoo_node_configt(models.Model):
 	dbtools=fields.Text('DB tools')
 	postexe=fields.Text('Post exe')
 	service=fields.Text('Service')
+	createFile=fields.Text('Create File')
+	dbAccess=fields.Text('DB Access')
 	testNode = fields.Boolean('Test Node', default=False)
 	testNpm = fields.Boolean('Test Npm', default=False)
 	testDbAccess = fields.Boolean('Test DB Access', default=False)
@@ -55,13 +57,23 @@ class ees_odoo_node_configt(models.Model):
 		file = open('eesti.txt', 'r')
 		self.testNode = True
 
-	@api.depends('testNode')
+	@api.depends('testNode','createFile')
 	def test_node_file(self):
-		fld=self.nodejs_folder
-		try:
-			proc = subprocess.Popen([fld+'node.exe', fld+'createFile.js'], stdin=PIPE, stdout=PIPE, stderr=PIPE)
-			(stdout, stderr) = proc.communicate()
-			exit_code = proc.wait()
+		for record in self:
+			fname='scriptCreateFile'+str(record.id)+'.js'
+			fld=self.nodejs_folder
+			ttt='const scriptfile="'+fld.replace('\\','\\\\')+fname+'";const script_dbid='+str(record.id)+';const br="<br/>";'
+			sss=self.dbtools.replace('%PG-CONFIG',self.pgconfig)
+			with open(fld+fname, 'w+') as out:
+				out.write(ttt+sss+self.createFile+'\n')
+			with open(fld+'c-'+fname, 'w+') as oout:
+				sss=self.createFile.replace('%PG-CONFIG',self.pgconfig)+'\n'
+				sss=sss.replace('%NODEFOLDER',fld.replace('\\','\\\\'))
+				oout.write(ttt+sss)
+			#windows
+			p=subprocess.Popen([fld+'node.exe',fld+'c-'+fname], stdin=PIPE, stdout=PIPE, stderr=PIPE)
+			(stdout, stderr) = p.communicate()
+			exit_code = p.wait()
 			if exit_code != 0:
 					#testNode = False
 					self.testNode = False
@@ -70,12 +82,7 @@ class ees_odoo_node_configt(models.Model):
 					#read_file
 					file = open('eesti.txt', 'r')
 					self.testNode = True
-					return stdout
-		except Exception:
-			self.testNode = False
-		else:
-			self.testNode = False
-			
+					
 	@api.depends('testNpm')
 	def test_npm(self):
 		fld=self.nodejs_folder
@@ -84,19 +91,29 @@ class ees_odoo_node_configt(models.Model):
 		else:
 			self.testNode = False
 	
-	@api.depends('testDbAccess')
+	@api.depends('testDbAccess','dbAccess')
 	def test_db_access(self):
-		fld=self.nodejs_folder
-		proc = subprocess.Popen([fld+'node.exe', fld+'dbAccess.js'], stdin=PIPE, stdout=PIPE, stderr=PIPE)
-		(stdout, stderr) = proc.communicate()
-		exit_code = proc.wait()
-		if exit_code != 0:
-				#testNode = False
-				self.testDbAccess = False
-				return stderr
-		else:
-				self.testDbAccess = True
-				return stdout
+		for record in self:
+			fname='scriptDbAccess'+str(record.id)+'.js'
+			fld=self.nodejs_folder
+			ttt='const scriptfile="'+fld.replace('\\','\\\\')+fname+'";const script_dbid='+str(record.id)+';const br="<br/>";'
+			sss=self.dbtools.replace('%PG-CONFIG',self.pgconfig)
+			with open(fld+fname, 'w+') as out:
+				out.write(ttt+sss+self.dbAccess+'\n')
+			with open(fld+'c-'+fname, 'w+') as oout:
+				sss=self.dbAccess.replace('%PG-CONFIG',self.pgconfig)+'\n'
+				sss=sss.replace('%NODEFOLDER',fld.replace('\\','\\\\'))
+				oout.write(ttt+sss)
+			#windows
+			p=subprocess.Popen([fld+'node.exe',fld+'c-'+fname], stdin=PIPE, stdout=PIPE, stderr=PIPE)
+			(stdout, stderr) = p.communicate()
+			exit_code = p.wait()
+			if exit_code != 0:
+					self.testDbAccess = False
+					return stderr
+			else:
+					self.testDbAccess = True
+					return stdout
 	
 	@api.depends('testDbWrite')
 	def test_db_write(self):
@@ -120,6 +137,9 @@ class ees_odoo_node_script(models.Model):
 	console_service=fields.Text('service console output')
 	cfg=fields.Many2one('ees_odoo_node.config',default=1)
 	pid=fields.Integer('pid')
+	dayTime=fields.Char('Day Time')
+	frequency=fields.Selection((('HOURLY', 'HOURLY'),('DAILY', 'DAILY'),('WEEKLY', 'WEEKLY'),('MONTHLY', 'MONTHLY')), string='Frequency')
+	
 	
 	@api.multi
 	@api.depends('jscontents')
@@ -162,6 +182,10 @@ class ees_odoo_node_script(models.Model):
 	def clean_console(self):
 		for record in self:
 			record.console_js=''
+	
+	def clean_console_service(self):
+		for record in self:
+			record.console_service=''
 			
 	@api.multi
 	@api.depends('jscontents','cfg')
