@@ -13,6 +13,7 @@ EESTISOFT module that Adds nodejs to odoo
 	
 Made with love.
     """,
+'images':['Banner.png']
     'depends': ['base'],
     'data': ['views/ees_odoo_node.xml','views/ir.model.access.csv'],
     'installable': True,
