@@ -60,10 +60,7 @@
 	<field name="dbtools">const {Pool,Client}=require("pg");const fs=require("fs");const pgescape=require("pg-escape");const pgpool=new Pool(
 	%PG-CONFIG
 );var elog=new Date().toLocaleTimeString()+":started";console.olog=console.log;var esync=true;console.log=function(msg){elog=new Date().toLocaleTimeString()+":"+msg+"\n"+elog;if(esync){esync=false;setTimeout(function(){esync=true},2500);if(elog.length>10000){elog=elog.substring(0,5000)}var cmd=pgescape("UPDATE public.ees_odoo_node_script SET console_js=CONCAT(%L,'\n',console_js) WHERE id="+script_dbid+";",elog);elog='';pgpool.query(cmd,(err2,pgdata)=>{if(err2){console.olog(err2.message)}console.olog(msg)});}};
-var ees={
-	select:function(table,query,next,oo){if(!oo){oo={}}var q='SELECT ';if(oo.fields){q=q+oo.fields.join(',');}else{q=q+'*'}q=q+' FROM public.'+table+' WHERE '+query;pgpool.query(q,next);},
-	update:function(table,query,fields,values,next,oo){if(!{oo}){oo={}}var q='UPDATE public.'+table;q=q+' SET ';for(var f=0;f!=fields.length;f++){fields[f]=fields[f]+'='+values[f];}q=q+fields.join(',')+' WHERE '+query;pgpool.query(q,next);}
-};
+
 	</field>
 	<field name="postexe">const {exec}=require('child_process');const {Pool,Client}=require("pg");const pgescape=require("pg-escape");const fs=require("fs");const pgpool=new Pool(
 	%PG-CONFIG
@@ -130,6 +127,7 @@ dbAccess()
 <group><field name="nodejs_folder"/><field name="nssm_folder"/><field name="pgconfig" widget="ace" ace-mode="json"/></group>
 <label for="install_node_modules" string="Prerequisites for db functionalities"/><button name="install_node_modules" string="npm for postgres" type="object" class="btn-primary" />
 <br/>
+<!-- ::::::::::::::::::::::::::::::::::::
 <label for="test_node" string="Test Node File"/><button name="test_node_file" string="test node" type="object" class="btn-primary" />
 <field name="testNode" widget="boolean_button" options="{'terminology':{'string_true': 'True','hover_true': 'True','string_false': 'False','hover_false': 'False'}}"/>
 <br/>
@@ -143,7 +141,7 @@ dbAccess()
 <field name="testDbWrite" widget="boolean_button" options="{'terminology':{'string_true': 'True','hover_true': 'True','string_false': 'False','hover_false': 'False'}}"/>
 <br/>
 <button name="set_all_test_false" string="reset test" type="object" class="btn-primary" />
-
+:::::::::::::::::::::::::::::::::::::::::-->
 <notebook>
 <page string="dbtools"><field name="dbtools" widget="ace" ace-mode="javascript"/></page>
 <page string="post exec"><field name="postexe" widget="ace" ace-mode="javascript"/></page>
