@@ -4,7 +4,7 @@ ees_odoo_node
 ===========================================================
 This repository is an odoo module.
 
-It allows to run and edit node-js scripts - currently works only in windows.
+It allows to create, edit and run  node-js scripts without leaving the odoo interface - also allows to configure the scripts as system services - currently works only in windows.
 
 
 Prerequisite 
