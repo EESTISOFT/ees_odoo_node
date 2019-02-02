@@ -1,13 +1,15 @@
 {
     'name': 'EESTISOFT odoo node-js',
     'version': '11.0.4.8',
-    'author': 'Hideki Yamamoto',
+	'license':'LGPL-3', 
+    'author': 'EESTISOFT, ' 'Hideki Yamamoto',
+	'mantainer':'EESTISOFT',
     'category': 'Productivity',
     'website': 'https://eestisoft.com',
     'sequence': 2,
     'summary': 'Adds nodejs',
     'description': """
-Adds nodejs
+EESTISOFT module that Adds nodejs to odoo
 	
 Made with love.
     """,
