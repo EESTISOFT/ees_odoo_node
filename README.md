@@ -15,7 +15,7 @@ Configuration
 =============
  - Install the ees_odoo_node module as you would with any other module.
  - In the user settings, be sure to enable the NodeJS group in the admin user and F5 to have the menu displayed.
- - In the Node-Js\Config menu - be sure to insert the nodejs installation directiory. (path MUST end with "\")
+ - In the Node-Js\Config menu - be sure to insert the nodejs installation directiory. (path MUST end with "\\")
  - In the Node-Js\Config menu - click the npm button once (if you want you can alternatively verify the precence of module pg and pg-escape in the node_modules folder or npm it yourself.)
  - In the Node-Js\Config menu - Be sure to input the correct parameters of the odoo database, this is necessary for having the output of console.log instructions to end up in the odoo db for you to read.
  
