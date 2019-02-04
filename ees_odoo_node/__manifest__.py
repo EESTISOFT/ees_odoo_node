@@ -2,7 +2,7 @@
     'name': 'EESTISOFT odoo node-js',
     'version': '11.0.4.8',
 	'license':'LGPL-3', 
-    'author': 'EESTISOFT, ' 'Hideki Yamamoto',
+    'author': 'EESTISOFT, ' 'Hideki Yamamoto, ' 'Tiago Magrini Rigo',
 	'mantainer':'EESTISOFT',
     'category': 'Productivity',
     'website': 'https://eestisoft.com',
