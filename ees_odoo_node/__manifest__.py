@@ -5,6 +5,7 @@
     'author': 'EESTISOFT, ' 'Hideki Yamamoto, ' 'Tiago Magrini Rigo',
 	'mantainer':'EESTISOFT',
     'category': 'Productivity',
+	'support':'odoo@eestisoft.com',
     'website': 'https://eestisoft.com',
     'sequence': 2,
     'summary': 'Adds nodejs',
